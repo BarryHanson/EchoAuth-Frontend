@@ -50,7 +50,7 @@ export default function OwnersPage() {
 
   const fetchOwners = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/owners', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/owners`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();
@@ -67,7 +67,7 @@ export default function OwnersPage() {
   const fetchSellers = async (ownerId: number) => {
     try {
       setSellers([]); // Clear previous sellers immediately
-      const response = await fetch(`http://localhost:3001/api/owners/${ownerId}/sellers`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/owners/${ownerId}/sellers`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();
@@ -86,7 +86,7 @@ export default function OwnersPage() {
       // Fetch owner's all programs (they can own multiple)
       const fetchOwnPrograms = async () => {
         try {
-          const response = await fetch('http://localhost:3001/api/owners', {
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/owners`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           const data = await response.json();
@@ -141,7 +141,7 @@ export default function OwnersPage() {
           }
         : formData;
 
-      const response = await fetch('http://localhost:3001/api/owners', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/owners`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
