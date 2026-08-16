@@ -38,6 +38,14 @@ export default function SellerDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
+  // Get app base URL
+  const getBaseUrl = () => {
+    if (typeof window !== 'undefined') {
+      return window.location.origin;
+    }
+    return process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -264,11 +272,11 @@ export default function SellerDashboard() {
                   <p className="font-semibold text-slate-900 dark:text-white mb-2">{program.programName}</p>
                   <div className="flex items-center gap-2">
                     <code className="flex-1 text-sm font-mono bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 break-all">
-                      {`http://localhost:3000/register/${program.programName.toLowerCase().replace(/\s+/g, '-')}`}
+                      {`${getBaseUrl()}/register/${program.programName.toLowerCase().replace(/\s+/g, '-')}`}
                     </code>
                     <button
                       onClick={() => {
-                        navigator.clipboard.writeText(`http://localhost:3000/register/${program.programName.toLowerCase().replace(/\s+/g, '-')}`);
+                        navigator.clipboard.writeText(`${getBaseUrl()}/register/${program.programName.toLowerCase().replace(/\s+/g, '-')}`);
                         setSuccess('✓ Registration URL copied');
                         setTimeout(() => setSuccess(''), 2000);
                       }}
