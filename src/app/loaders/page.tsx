@@ -17,6 +17,8 @@ export default function LoadersPage() {
     version: '',
     file: '',
     requireFilenameMatch: false,
+    loaderHash: '',
+    enforceHashVerification: false,
   });
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -29,6 +31,8 @@ export default function LoadersPage() {
     version: '',
     file: '',
     requireFilenameMatch: false,
+    loaderHash: '',
+    enforceHashVerification: false,
   });
 
   const fetchLoaders = async () => {
@@ -77,11 +81,11 @@ export default function LoadersPage() {
     setSubmitting(true);
 
     try {
-      const response = await createLoader(formData.name, formData.version, formData.file, formData.requireFilenameMatch);
+      const response = await createLoader(formData.name, formData.version, formData.file, formData.requireFilenameMatch, formData.loaderHash, formData.enforceHashVerification);
 
       if (response.status === 'success') {
         setSuccess('✓ Loader created successfully');
-        setFormData({ name: '', version: '', file: '', requireFilenameMatch: false });
+        setFormData({ name: '', version: '', file: '', requireFilenameMatch: false, loaderHash: '', enforceHashVerification: false });
         setShowForm(false);
         fetchLoaders();
       } else {
@@ -117,6 +121,8 @@ export default function LoadersPage() {
       version: loader.version,
       file: loader.file,
       requireFilenameMatch: loader.requireFilenameMatch,
+      loaderHash: loader.loaderHash || '',
+      enforceHashVerification: loader.enforceHashVerification || false,
     });
   };
 
@@ -226,6 +232,30 @@ export default function LoadersPage() {
                   <div className="text-xs text-slate-500 dark:text-slate-400">Users must run the loader with the exact filename specified above</div>
                 </label>
               </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Loader Hash (SHA-256) <span className="text-slate-500 dark:text-slate-400 text-xs">(Optional)</span></label>
+                <input
+                  type="text"
+                  value={formData.loaderHash}
+                  onChange={(e) => setFormData({ ...formData, loaderHash: e.target.value })}
+                  placeholder="Paste hash from EchoAuth-Hash-Check utility"
+                  className="font-mono text-sm"
+                />
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Use the Hash Check utility to generate this</p>
+              </div>
+              <div className="flex items-center gap-3 p-3 bg-slate-100 dark:bg-slate-700 rounded-lg">
+                <input
+                  type="checkbox"
+                  id="enforceHash"
+                  checked={formData.enforceHashVerification}
+                  onChange={(e) => setFormData({ ...formData, enforceHashVerification: e.target.checked })}
+                  className="w-5 h-5 rounded border-slate-300"
+                />
+                <label htmlFor="enforceHash" className="flex-1 cursor-pointer">
+                  <div className="font-medium text-slate-700 dark:text-slate-300">Enforce Hash Verification</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400">Loaders will be checked for integrity using the hash above</div>
+                </label>
+              </div>
               <div className="flex gap-2">
                 <button type="submit" disabled={submitting} className="btn-primary">
                   {submitting ? 'Creating...' : 'Create'}
@@ -293,6 +323,16 @@ export default function LoadersPage() {
                       {loader.requireFilenameMatch ? '✓ Enforced' : '○ Optional'}
                     </span>
                   </div>
+                  {loader.loaderHash && (
+                    <div className="text-sm">
+                      <span className="font-medium text-slate-700 dark:text-slate-300">
+                        Hash Verification:
+                      </span>
+                      <span className={`ml-2 font-semibold ${loader.enforceHashVerification ? 'text-amber-600 dark:text-amber-400' : 'text-slate-500 dark:text-slate-400'}`}>
+                        {loader.enforceHashVerification ? '✓ Enforced' : '○ Set'}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex gap-2">
@@ -348,6 +388,16 @@ export default function LoadersPage() {
                     required
                   />
                 </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Loader Hash (SHA-256) <span className="text-xs text-slate-500">(Optional)</span></label>
+                  <input
+                    type="text"
+                    value={editFormData.loaderHash}
+                    onChange={(e) => setEditFormData({ ...editFormData, loaderHash: e.target.value })}
+                    placeholder="SHA-256 hash"
+                    className="font-mono text-sm"
+                  />
+                </div>
                 <div className="flex items-center gap-3 p-3 bg-slate-100 dark:bg-slate-700 rounded-lg">
                   <input
                     type="checkbox"
@@ -358,6 +408,18 @@ export default function LoadersPage() {
                   />
                   <label htmlFor="editRequireFilename" className="flex-1 cursor-pointer">
                     <div className="font-medium text-slate-700 dark:text-slate-300">Enforce Filename Match</div>
+                  </label>
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-slate-100 dark:bg-slate-700 rounded-lg">
+                  <input
+                    type="checkbox"
+                    id="editEnforceHash"
+                    checked={editFormData.enforceHashVerification}
+                    onChange={(e) => setEditFormData({ ...editFormData, enforceHashVerification: e.target.checked })}
+                    className="w-5 h-5 rounded border-slate-300"
+                  />
+                  <label htmlFor="editEnforceHash" className="flex-1 cursor-pointer">
+                    <div className="font-medium text-slate-700 dark:text-slate-300">Enforce Hash Verification</div>
                   </label>
                 </div>
                 <div className="flex gap-2">

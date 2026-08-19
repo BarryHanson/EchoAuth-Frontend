@@ -156,12 +156,14 @@ export async function getAllLoaders() {
   return response.data;
 }
 
-export async function createLoader(name: string, version: string, file: string, requireFilenameMatch: boolean = false) {
+export async function createLoader(name: string, version: string, file: string, requireFilenameMatch: boolean = false, loaderHash: string = '', enforceHashVerification: boolean = false) {
   const response = await getApiClient().post('/api/admin/loaders/create', {
     name,
     version,
     file,
     requireFilenameMatch,
+    loaderHash: loaderHash || undefined,
+    enforceHashVerification,
   });
   return response.data;
 }
@@ -174,7 +176,7 @@ export async function updateLoaderVersion(loaderId: number, version: string) {
   return response.data;
 }
 
-export async function updateLoader(loaderId: number, data: { name?: string; version?: string; file?: string; requireFilenameMatch?: boolean }) {
+export async function updateLoader(loaderId: number, data: { name?: string; version?: string; file?: string; requireFilenameMatch?: boolean; loaderHash?: string; enforceHashVerification?: boolean }) {
   const response = await getApiClient().put(`/api/admin/loaders/${loaderId}`, data);
   return response.data;
 }
